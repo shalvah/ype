@@ -4,10 +4,29 @@
 
 TypeScript is cool, but it only gives you static type checking. Type errors can still slip into your code. Ype is designed to give you runtime type assertions in JavaScript, with _minimal performance overhead_.
 
-You can use them anywhere you need to, but the major use case Ype was built for is in function arguments.
+You can use Ype anywhere you need to, but the major use case Ype was built for is in function arguments.
 
-Examples:
+## Why TypeScript (or any other static typechecker) isn't enough
+TypeScript statically checks your code for possible type errors. But it cannot stop all errors, especially if you type wrongly or weakly (which happens more than we like to admit).
+ 
+Look at this piece of valid TypeScript code. It gets a value from the user (form submission) and does something with it.
 
+```typescript
+function performAction(action: "UPDATE" | "DELETE") {
+    if (action == "UPDATE") {
+        updateThing();
+    } else { // Then action must be "DELETE"
+        deleteThing();
+    }
+}
+
+const action: "UPDATE" | "DELETE" = req.body.action;
+performAction(action);
+```
+
+But you have no way of stopping the user from passing in a different value for `action`, without added frontend validation not covered by TypeScript. This can lead to bugs in your code (`deleteThing()` will be called unintentionally). With ype, you can prevent such with runtime assertions. 
+
+## Examples
 
 ```js
 const y = require("ype");
