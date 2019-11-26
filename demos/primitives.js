@@ -13,4 +13,5 @@ function doSomething(theString, theNumber, theBoolean, theArray) {
 }
 
 doSomething("yes", 1, true, [] ); // This is OK
-doSomething("1", 1, true, ["da"] ); // Gonna throw
+doSomething("1", 1, true, [2] );
+doSomething("1", 1, true, [true, false] ); // Gonna throw
