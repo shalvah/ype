@@ -1,0 +1,26 @@
+{
+  "name": "ype",
+  "version": "1.0.0",
+  "description": "Runtime type assertions for JS function arguments",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shalvah/ype.git"
+  },
+  "keywords": [
+    "types",
+    "runtime",
+    "assert",
+    "assertions",
+    "typechecking"
+  ],
+  "author": "Shalvah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shalvah/ype/issues"
+  },
+  "homepage": "https://github.com/shalvah/ype#readme"
+}
