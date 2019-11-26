@@ -28,6 +28,8 @@ sendEmailToUser("Hi there!", 1, "help@domain.com"); // This is OK
 sendEmailToUser("Hi there!", "one", "help@domain.com"); // This will throw, because "one" is not a number
 ```
 
+![](example.png)
+
 You can have nullable types, union types and more:
 
 ```js
