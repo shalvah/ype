@@ -4,6 +4,7 @@
   "description": "Runtime type assertions for JS function arguments",
   "main": "index.js",
   "scripts": {
+    "test-init": "jasmine init",
     "test": "jasmine"
   },
   "repository": {
@@ -22,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/shalvah/ype/issues"
   },
-  "homepage": "https://github.com/shalvah/ype#readme"
+  "homepage": "https://github.com/shalvah/ype#readme",
+  "devDependencies": {
+    "jasmine": "^3.5.0"
+  }
 }
