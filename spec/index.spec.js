@@ -54,3 +54,38 @@ describe("Type checking arrays of JS primitives", () => {
 
 });
 
+
+
+describe("Handling null/undefined values", () => {
+
+    function c(var1, var2, var3) {
+        y(
+            [var1, String],
+            [var2, Number],
+            [var3, Boolean],
+        );
+    }
+
+    it("throws on missing (undefined) values", () => {
+        expect(
+            () => c("1", 1)
+        ).toThrow(new TypeError('undefined is of the wrong type. Expected boolean, but got undefined.'));
+    });
+
+    it("throws on explicit undefined values", () => {
+        expect(
+            () => c("1", 1, undefined)
+        ).toThrow(
+            new TypeError('undefined is of the wrong type. Expected boolean, but got undefined.')
+        );
+    });
+
+    it("throws on explicit undefined values", () => {
+        expect(
+            () => c("1", 1, null)
+        ).toThrow(
+            new TypeError('null is of the wrong type. Expected boolean, but got null.')
+        );
+    });
+
+});
