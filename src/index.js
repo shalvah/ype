@@ -2,45 +2,46 @@
 
 const normalizeType = (type) => {
     if (type === String) {
-        return "string";
+        return {type: "string", name: "string"};
     }
 
     if (type === Number) {
-        return "number";
+        return {type: "number", name: "number"};
     }
 
     if (type === Boolean) {
-        return "boolean";
+        return {type: "boolean", name: "boolean"};
     }
 
     if (type === null) {
-        return "null";
+        return {type: "null", name: "null"};
     }
 
     if (type === Array) {
-        return "array";
+        return {type: "array", name: "array"};
     }
 
     if (Array.isArray(type)) {
         if (type.length === 1) {
             // an array of X
-            return ["array", normalizeType(type[0])];
+            const X = normalizeType(type[0]);
+            return {type: ["array", X.type] , name: "array of " + X.name};
         }
     }
 };
 
 // Returns true or the actual types
 const checkType = (valueTypeOf, normalizedType, value) => {
-    if (!Array.isArray(normalizedType)) {
-        return valueTypeOf === normalizedType || valueTypeOf;
+    if (!Array.isArray(normalizedType.type)) {
+        return valueTypeOf === normalizedType.type || valueTypeOf;
     }
 
-    if (normalizedType[0] === "array") {
+    if (normalizedType.type[0] === "array") {
         // the second argument is the type of element in the array
         for (let itemValue of value) {
-            const actualType = checkType(getTypeOf(itemValue), normalizedType[1], itemValue);
+            const actualType = checkType(getTypeOf(itemValue), {type: normalizedType.type[1]}, itemValue);
             if (actualType !== true) {
-                return actualType;
+                return "array containing " + actualType;
             }
         }
         // Empty arrays get a pass
@@ -56,7 +57,12 @@ const buildMessage = (value, actualTypes, expectedTypeNames) => {
         type = `either ${expectedTypeNames.slice(0, -1).join(', ')} or ${expectedTypeNames[expectedTypeNames.length - 1]}`;
     }
 
-    return `${value} is of the wrong type. Expected ${type}, but found ${actualTypes}.`
+    let valueRepresentation = value;
+    if (Array.isArray(value)) {
+        valueRepresentation = `[${value}]`;
+    }
+
+    return `${valueRepresentation} is of the wrong type. Expected ${type}, but found ${actualTypes}.`
 };
 
 const getTypeOf = (value) => {
@@ -79,7 +85,7 @@ const assert = (value, types, error) => {
         if (actualType === true) {
             return;
         }
-        expectedTypeNames.push(normalizedType);
+        expectedTypeNames.push(normalizedType.name);
     }
 
     error.message = buildMessage(value, actualType, expectedTypeNames);
