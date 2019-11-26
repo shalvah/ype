@@ -2,7 +2,7 @@
 
 [Coming soon]
 
-TypeScript is cool, but type errors can still slip into your code. Ype gives you runtime type assertions in JavaScript.
+TypeScript is cool, but it only gives you static type checking. Type errors can still slip into your code. Ype is designed to give you runtime type assertions in JavaScript, with minimal performance overhead.
 
 You can use them anywhere you need to, but the major use case is in function arguments.
 
