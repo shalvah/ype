@@ -1,6 +1,6 @@
 const y = require("../src");
 
-function a(theString, theNumber, theBoolean, theArray) {
+function doSomething(theString, theNumber, theBoolean, theArray) {
     y(
         [theString, String],
         [theNumber, Number],
@@ -11,5 +11,5 @@ function a(theString, theNumber, theBoolean, theArray) {
     return theNumber + 1;
 }
 
-a("yes", 1, true, [] ); // This is OK
-a(1, 1, true, [] ); // Gonna throw
+doSomething("yes", 1, true, [] ); // This is OK
+doSomething(1, 1, true, [] ); // Gonna throw

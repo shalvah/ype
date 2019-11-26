@@ -43,7 +43,7 @@ const buildMessage = (value, valueTypeOf, expectedTypeNames) => {
     return `${value} is of the wrong type. Expected ${type}, but found ${valueTypeOf}.`
 };
 
-const assert = (value, types) => {
+const assert = (value, types, error) => {
     let valueTypeOf = typeof value;
     if (Array.isArray(value)) {
         valueTypeOf = "array";
@@ -59,12 +59,15 @@ const assert = (value, types) => {
         expectedTypeNames.push(normalizedType);
     }
 
-    throw new TypeError(buildMessage(value, valueTypeOf, expectedTypeNames));
+    error.message = buildMessage(value, valueTypeOf, expectedTypeNames);
+    throw error;
 };
 
 const ype = (...typeAssertions) => {
+    const error = new TypeError();
+    Error.captureStackTrace(error, ype);
     for (let [value, ...types] of typeAssertions) {
-        assert(value, types);
+        assert(value, types, error);
     }
 };
 
