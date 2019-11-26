@@ -1,10 +1,10 @@
 # ype
 
-[Coming soon]
+**This project is still in its experimental stages.**
 
-TypeScript is cool, but it only gives you static type checking. Type errors can still slip into your code. Ype is designed to give you runtime type assertions in JavaScript, with minimal performance overhead.
+TypeScript is cool, but it only gives you static type checking. Type errors can still slip into your code. Ype is designed to give you runtime type assertions in JavaScript, with _minimal performance overhead_.
 
-You can use them anywhere you need to, but the major use case is in function arguments.
+You can use them anywhere you need to, but the major use case Ype was built for is in function arguments.
 
 Examples:
 
