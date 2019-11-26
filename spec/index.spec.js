@@ -29,25 +29,27 @@ describe("Type checking JS primitives", () => {
 
 describe("Type checking arrays of JS primitives", () => {
 
-    function b(theString, theNumber, theBoolean, theArray) {
+    function b(stringArray, numberArray, booleanArray) {
         y(
-            [theString, String],
-            [theNumber, Number],
-            [theBoolean, Boolean],
-            [theArray, [Number]],
+            [stringArray, [String]],
+            [numberArray, [Number]],
+            [booleanArray, [Boolean]],
         );
-
     }
 
     it("doesn't throw on fully matching types", () => {
-        b("yes", 1, true, [] );
-        b("yes", 1, true, [2] );
+        b(["yes"], [1], [true, false]);
+        b(["yes"], [1], [true, false]);
+        b(["yes"], [1], [true, false]);
     });
 
     it("throws on wrong types", () => {
         expect(
-            () => b("yes", 1, true, ["ya"] )
-        ).toThrow(new TypeError('[ya] is of the wrong type. Expected array of number, but got array containing string.'));
+            () => b(["yes"], ["1"], [true])
+        ).toThrow(new TypeError('[1] is of the wrong type. Expected array of number, but got array containing string.'));
+        expect(
+            () => b("yes", ["1"], [true])
+        ).toThrow(new TypeError('"yes" is of the wrong type. Expected array of string, but got string.'));
     });
 
 });
