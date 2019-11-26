@@ -6,12 +6,10 @@ function doSomething(theString, theNumber, theBoolean, theArray) {
         [theNumber, Number],
         [theBoolean, Boolean],
         [theArray, Array],
-        [theArray, [Number]],
     );
 
     return theNumber + 1;
 }
 
 doSomething("yes", 1, true, [] ); // This is OK
-doSomething("1", 1, true, [2] );
-doSomething("1", 1, true, [true, false] ); // Gonna throw
+doSomething(1, 1, true, [2] ); // Gonna throw

@@ -96,12 +96,4 @@ function doSomething(var1) {
         [var1, y.Car],
     );
 }
-
-// and if you want generics...
-function doSomething(var1, var2) {
-    types(
-        [var1, (T) => T],
-        [var2, (T) => y.shape({a: [T]})],
-    );
-}
 ```

@@ -38,6 +38,9 @@ const checkType = (valueTypeOf, normalizedType, value) => {
 
     if (normalizedType.type[0] === "array") {
         // the second argument is the type of element in the array
+        if (!Array.isArray(value)) {
+            return getTypeOf(value);
+        }
         for (let itemValue of value) {
             const actualType = checkType(getTypeOf(itemValue), {type: normalizedType.type[1]}, itemValue);
             if (actualType !== true) {
@@ -62,7 +65,7 @@ const buildMessage = (value, actualTypes, expectedTypeNames) => {
         valueRepresentation = `[${value}]`;
     }
 
-    return `${valueRepresentation} is of the wrong type. Expected ${type}, but found ${actualTypes}.`
+    return `${valueRepresentation} is of the wrong type. Expected ${type}, but got ${actualTypes}.`
 };
 
 const getTypeOf = (value) => {

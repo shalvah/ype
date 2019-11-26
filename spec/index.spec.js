@@ -22,7 +22,7 @@ describe("Type checking JS primitives", () => {
     it("throws on wrong types", () => {
         expect(
             () => a(1, 1, true, [] )
-        ).toThrow(new TypeError('1 is of the wrong type. Expected string, but found number.'));
+        ).toThrow(new TypeError('1 is of the wrong type. Expected string, but got number.'));
     });
 
 });
@@ -47,7 +47,7 @@ describe("Type checking arrays of JS primitives", () => {
     it("throws on wrong types", () => {
         expect(
             () => b("yes", 1, true, ["ya"] )
-        ).toThrow(new TypeError('[ya] is of the wrong type. Expected array of number, but found array containing string.'));
+        ).toThrow(new TypeError('[ya] is of the wrong type. Expected array of number, but got array containing string.'));
     });
 
 });
