@@ -1,6 +1,6 @@
 {
   "name": "ype",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Runtime type assertions for JS function arguments",
   "main": "src/index.js",
   "scripts": {
