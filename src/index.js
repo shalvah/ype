@@ -32,23 +32,31 @@ const normalizeType = (type) => {
 
 // Returns true or the actual types
 const checkType = (valueTypeOf, normalizedType, value) => {
-    if (!Array.isArray(normalizedType.type)) {
+    const expectedType = normalizedType.type;
+    if (typeof expectedType === "string") {
         return valueTypeOf === normalizedType.type || valueTypeOf;
     }
 
-    if (normalizedType.type[0] === "array") {
-        // the second argument is the type of element in the array
-        if (!Array.isArray(value)) {
-            return getTypeOf(value);
-        }
-        for (let itemValue of value) {
-            const actualType = checkType(getTypeOf(itemValue), {type: normalizedType.type[1]}, itemValue);
-            if (actualType !== true) {
-                return "array containing " + actualType;
+    if (Array.isArray(expectedType)) {
+        if (expectedType[0] === "array") {
+            // the second argument is the type of element in the array
+            if (!Array.isArray(value)) {
+                return getTypeOf(value);
             }
+            for (let itemValue of value) {
+                const actualType = checkType(getTypeOf(itemValue), {type: expectedType[1]}, itemValue);
+                if (actualType !== true) {
+                    return "array containing " + actualType;
+                }
+            }
+            // Empty arrays get a pass
+            return true;
         }
-        // Empty arrays get a pass
-        return true;
+    }
+
+
+    if (expectedType instanceof YpeType) {
+
     }
 };
 
@@ -71,12 +79,16 @@ const buildMessage = (value, actualType, expectedTypeNames) => {
 };
 
 const getTypeOf = (value) => {
-    let valueTypeOf = typeof value;
     if (Array.isArray(value)) {
-        valueTypeOf = "array";
+        return "array";
     }
-    return valueTypeOf;
-}
+
+    if (value === null) {
+        return "null";
+    }
+
+    return typeof value;
+};
 
 const assert = (value, types, error) => {
     let valueTypeOf = getTypeOf(value);
@@ -96,6 +108,7 @@ const assert = (value, types, error) => {
     error.message = buildMessage(value, actualType, expectedTypeNames);
     throw error;
 };
+
 
 const ype = (...typeAssertions) => {
     const error = new TypeError();

@@ -76,7 +76,7 @@ function doSomething(var1, var2, var3, var4, var5, var6) {
         [var1, y.union(String, [String])],  // union types
         [var1, String, [String]],  // also union types
         [var1, String, null],  // nullable types
-        [var2, y.only("this", "that")],  // same as "this" | "that" and enums in TypeScript
+        [var2, y.values("this", "that")],  // same as "this" | "that" and enums in TypeScript
         [var3, y.range(2, 7)], // Range. Only valid for Numbers and subsets
         [var4, y.integer().range(2, 7)],
         [var5, y.shape({a: [String], b: [Number, null], c: [[String], String], d: y.only(1, 3)})], // structural typing
