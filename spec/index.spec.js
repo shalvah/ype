@@ -122,3 +122,30 @@ describe("Type checking nullable and union types", () => {
     });
 
 });
+
+
+describe("Type checking value types", () => {
+
+    function d(var1, var2, var3) {
+        y(
+            [var1, y.values("one", "two")],
+            [var2, y.values(3, 4, 5)],
+            [var3, y.values(9, false), null],
+        );
+    }
+
+    it("doesn't throw on fully matching types", () => {
+        d("one", 4, false);
+        d("one", 5, 9);
+        d("two", 3, null);
+    });
+
+    it("throws on wrong types", () => {
+        expect(
+            () => d("four", 3, null)
+        ).toThrow(
+            new TypeError('5 is of the wrong type. Expected either string, array of string or null, but got number.')
+        );
+    });
+
+});

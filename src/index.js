@@ -28,6 +28,10 @@ const normalizeType = (type) => {
             return {type: ["array", X.type] , name: "array of " + X.name};
         }
     }
+
+    if ("isYpeType" in type) {
+        return type;
+    }
 };
 
 // Returns true or the actual types
@@ -55,8 +59,14 @@ const checkType = (valueTypeOf, normalizedType, value) => {
     }
 
 
-    if (expectedType instanceof YpeType) {
+    if (normalizedType.values) {
+        for (let allowedValue of normalizedType.values) {
+            if (value === allowedValue) {
+                return true;
+            }
+        }
 
+        return `value {${value}}`;
     }
 };
 
@@ -118,4 +128,13 @@ const ype = (...typeAssertions) => {
     }
 };
 
+ype.values = (...values) => {
+  return {
+      values,
+      get name() {
+          return `one of values {${values.join(', ')}}`;
+      },
+      isYpeType: true
+  };
+};
 module.exports = ype;
