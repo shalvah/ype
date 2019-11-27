@@ -84,7 +84,11 @@ function doSomething(var1, var2, var3, var4, var5, var6) {
 }
 
 // define and reuse types
-// Represents a 4-digit string
+const UserType = y.shape({
+  id: [Number],
+  name: [String],
+});
+
 const PinCodeType = {
   name:`a PIN code (4-digit string)`,
   inherits: ['string'],
@@ -102,18 +106,18 @@ const PinCodeType = {
 }
 
 // then use:
-function savePin(pinCode) {
-  y([pinCode, PinCodeType]);
+function savePin(user, pinCode) {
+  y([user, UserType], [pinCode, PinCodeType]);
   
   // save the PIN
 }
 
 // Will throw error: "hahaha" is the wrong type. 
 // Expected a PIN code (4-digit string), but got "hahaha" (6 digits).
-savePin("hahaha");
+savePin({ id: "dy53hd", name: "Joe", }, "hahaha");
 
 // Will throw error: 8 is the wrong type. 
 // Expected a PIN code (4-digit string), but got number.
-savePin(6);
+savePin({ id: "dy53hd", name: "Joe", }, 6);
 
 ```
