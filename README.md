@@ -77,23 +77,43 @@ function doSomething(var1, var2, var3, var4, var5, var6) {
         [var1, String, [String]],  // also union types
         [var1, String, null],  // nullable types
         [var2, y.values("this", "that")],  // same as "this" | "that" and enums in TypeScript
-        [var3, y.range(2, 7)], // Range. Only valid for Numbers and subsets
-        [var4, y.integer().range(2, 7)],
+        [var3, y.range(2, 7)], // Range. Only valid for Number and subsets
         [var5, y.shape({a: [String], b: [Number, null], c: [[String], String], d: y.only(1, 3)})], // structural typing
         [var6, y.instance(MyClass)], // instance of a class
     );
 }
 
 // define and reuse types
-y.Car = y.shape({
-    tyres: [Number],
-    doors: y.integer().range(1, 4),
-    model: [String],
-});
+// Represents a 4-digit string
+const PinCodeType = {
+  name:`a PIN code (4-digit string)`,
+  inherits: ['string'],
+  // The check should return true if the value is valid. 
+  // Otherwise it returns type information about the value.
+  check(value, type) {
+    // At this point, value is definitely a string
+    // (because of our `inherits` specifier earlier
+    if (value.length === 4) {
+      return true;
+    }
 
-function doSomething(var1) {
-    types(
-        [var1, y.Car],
-    );
+    return {type, name: `${value} ("${value.length}" digits)`}
+  }
 }
+
+// then use:
+function savePin(pinCode) {
+  y([pinCode, PinCodeType]);
+  
+  // save the PIN
+}
+
+// Will throw error: "hahaha" is the wrong type. 
+// Expected a PIN code (4-digit string), but got "hahaha" (6 digits).
+savePin("hahaha");
+
+// Will throw error: 8 is the wrong type. 
+// Expected a PIN code (4-digit string), but got number.
+savePin(6);
+
 ```
