@@ -140,11 +140,41 @@ describe("Type checking value types", () => {
         d("two", 3, null);
     });
 
-    it("throws on wrong types", () => {
+/*    it("throws on wrong types", () => {
         expect(
             () => d("four", 3, null)
         ).toThrow(
             new TypeError('5 is of the wrong type. Expected either string, array of string or null, but got number.')
+        );
+    });*/
+
+});
+
+describe("Type checking range types", () => {
+
+    function e(var1) {
+        y(
+            [var1, y.range(2, 7)],
+        );
+    }
+
+    it("doesn't throw on fully matching types", () => {
+        e(5);
+        e(2);
+        e(7);
+    });
+
+    it("throws on wrong types", () => {
+        expect(
+            () => e(1)
+        ).toThrow(
+            new TypeError('1 is of the wrong type. Expected a number in range {2 - 7}, but got value {1}.')
+        );
+
+        expect(
+            () => e("gh")
+        ).toThrow(
+            new TypeError('"gh" is of the wrong type. Expected a number in range {2 - 7}, but got string.')
         );
     });
 

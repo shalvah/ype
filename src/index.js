@@ -60,6 +60,7 @@ const checkType = (valueTypeOf, normalizedType, value) => {
 
 
     if (normalizedType.values) {
+        // Value type
         for (let allowedValue of normalizedType.values) {
             if (value === allowedValue) {
                 return true;
@@ -67,6 +68,19 @@ const checkType = (valueTypeOf, normalizedType, value) => {
         }
 
         return `value {${value}}`;
+    }
+
+    if (normalizedType.range) {
+        // Range type
+        // Only valid for numbers
+        if (valueTypeOf === "number") {
+            if (normalizedType.range.lower <= value && value <= normalizedType.range.upper) {
+                return true;
+            }
+            return `value {${value}}`;
+        }
+
+        return valueTypeOf;
     }
 };
 
@@ -137,4 +151,18 @@ ype.values = (...values) => {
       isYpeType: true
   };
 };
+
+ype.range = (lower, upper) => {
+  return {
+      range: {
+          lower,
+          upper,
+      },
+      get name() {
+          return `a number in range {${lower} - ${upper}}`;
+      },
+      isYpeType: true
+  };
+};
+
 module.exports = ype;
