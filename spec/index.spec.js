@@ -12,8 +12,7 @@ describe("Type checking JS primitives", () => {
 
         return theNumber + 1;
     }
-    // corecion
-    // missing values
+    // coercion
 
     it("doesn't throw on fully matching types", () => {
         a("yes", 1, true, [] );
@@ -85,6 +84,40 @@ describe("Handling null/undefined values", () => {
             () => c("1", 1, null)
         ).toThrow(
             new TypeError('null is of the wrong type. Expected boolean, but got null.')
+        );
+    });
+
+
+});
+
+
+describe("Type checking nullable and union types", () => {
+
+    function d(var1, var2, var3) {
+        y(
+            [var1, String, Number],
+            [var2, Boolean],
+            [var3, String, [String], null],
+        );
+    }
+
+    it("doesn't throw on fully matching types", () => {
+        d("yes", true, null);
+        d(1, false, "1");
+        d(1, false, ["1"]);
+    });
+
+    it("throws on wrong types", () => {
+        expect(
+            () => d("yes", true, 5)
+        ).toThrow(
+            new TypeError('5 is of the wrong type. Expected either string, array of string or null, but got number.')
+        );
+
+        expect(
+            () => d("yes", true, [5])
+        ).toThrow(
+            new TypeError('[5] is of the wrong type. Expected either string, array of string or null, but got array.') // TODO this should be "array containing number"
         );
     });
 
