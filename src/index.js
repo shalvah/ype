@@ -13,6 +13,10 @@ const normalizeType = (type) => {
         return {type: "boolean", name: "boolean"};
     }
 
+    if (type === Object) {
+        return {type: "object", name: "object"};
+    }
+
     if (type === null) {
         return {type: "null", name: "null"};
     }
@@ -59,28 +63,14 @@ const checkType = (valueTypeOf, normalizedType, value) => {
     }
 
 
-    if (normalizedType.values) {
-        // Value type
-        for (let allowedValue of normalizedType.values) {
-            if (value === allowedValue) {
-                return true;
+    if (normalizedType.isYpeType) {
+        let mismatchedType;
+        for (let superset of normalizedType.inherits || []) {
+            if ((mismatchedType = checkType(valueTypeOf, { type: superset }, value)) !== true) {
+                return mismatchedType;
             }
         }
-
-        return `value {${value}}`;
-    }
-
-    if (normalizedType.range) {
-        // Range type
-        // Only valid for numbers
-        if (valueTypeOf === "number") {
-            if (normalizedType.range.lower <= value && value <= normalizedType.range.upper) {
-                return true;
-            }
-            return `value {${value}}`;
-        }
-
-        return valueTypeOf;
+        return normalizedType.check(value, valueTypeOf);
     }
 };
 
@@ -148,7 +138,16 @@ ype.values = (...values) => {
       get name() {
           return `one of values {${values.join(', ')}}`;
       },
-      isYpeType: true
+      isYpeType: true,
+      check(value) {
+          for (let allowedValue of values) {
+              if (value === allowedValue) {
+                  return true;
+              }
+          }
+
+          return `value {${value}}`;
+      }
   };
 };
 
@@ -161,7 +160,20 @@ ype.range = (lower, upper) => {
       get name() {
           return `a number in range {${lower} - ${upper}}`;
       },
-      isYpeType: true
+      isYpeType: true,
+      inherits: ['number'],
+      check(value, valueTypeOf) {
+          // Range type
+          // Only valid for numbers
+          if (valueTypeOf === "number") {
+              if (lower <= value && value <= upper) {
+                  return true;
+              }
+              return `value {${value}}`;
+          }
+
+          return valueTypeOf;
+      }
   };
 };
 
