@@ -17,6 +17,10 @@ const normalizeType = (type) => {
         return {type: "object", name: "object"};
     }
 
+    if (type === Function) {
+        return {type: "function", name: "function"};
+    }
+
     if (type === null) {
         return {type: "null", name: "null"};
     }

@@ -1,4 +1,4 @@
-- Functions
+- Functions, objects - tests
 - Shapes
 - Custom API
 - Instances
