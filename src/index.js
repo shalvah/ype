@@ -87,14 +87,7 @@ const buildMessage = (value, actualType, expectedTypeNames) => {
         type = `either ${expectedTypeNames.slice(0, -1).join(', ')} or ${expectedTypeNames[expectedTypeNames.length - 1]}`;
     }
 
-    let valueRepresentation = value;
-    if (Array.isArray(value)) {
-        valueRepresentation = `[${value}]`;
-    } else if (actualType.type === "string") {
-        valueRepresentation = `"${value}"`
-    } else if (actualType.type === "object") {
-        valueRepresentation = formatObject(value);
-    }
+    const valueRepresentation = getValueRepresentation(value, actualType);
 
     return `${valueRepresentation} is of the wrong type. Expected ${type}, but got ${actualType.name}.`
 };
@@ -144,17 +137,23 @@ ype.values = (...values) => {
   return {
       values,
       get name() {
-          return `one of values {${values.join(', ')}}`;
+          let valuesList = values.reduce((a, v) => {
+              const valueType = getValueRepresentation(v, {type: getTypeOf(v)});
+              return a + ', ' + valueType;
+          }, '');
+          valuesList = valuesList.substring(2); // Remove initial ", "
+          return `one of values {${valuesList}}`;
       },
       isYpeType: true,
-      check(value) {
+      check(value, valueType) {
           for (let allowedValue of values) {
               if (value === allowedValue) {
                   return true;
               }
           }
 
-          return {type: "value", name: `value {${value}}`};
+          let valueRepresentation = getValueRepresentation(value, {type: valueType});
+          return {type: valueType, name: `value {${valueRepresentation}}`};
       }
   };
 };
@@ -185,9 +184,53 @@ ype.range = (lower, upper) => {
   };
 };
 
+ype.shape = (shape) => {
+  return {
+      shape,
+      get name() {
+          const shapeDescription = require('util').inspect(shape);
+          return `an object with shape ${shapeDescription}`;
+      },
+      isYpeType: true,
+      inherits: ['object'],
+      check(object, valueTypeOf) {
+          for (let [property, types] of Object.entries(shape)) {
+              if (!(property in object)) {
+                  return {type: 'object', name: `missing property ${property}`};
+              }
+          }
+
+          for (let [property, types] of Object.entries(shape)) {
+              const valueTypeOf = getTypeOf(object[property]);
+              let mismatchedType;
+              for (let expectedType of types) {
+                  const normalizedType = normalizeType(expectedType);
+                  if ((mismatchedType = checkType(valueTypeOf, normalizedType, object[property])) === true) {
+                      return true;
+                  }
+              }
+              return {type: 'object', name: `property ${property} is type ${valueTypeOf}`};
+          }
+          return true;
+      },
+  };
+};
+
 module.exports = ype;
 
 const formatObject = (object) => {
     const { inspect } = require('util');
     return `${inspect(object, {breakLength: Infinity, compact: true, depth: 2 })}`
+};
+
+const getValueRepresentation = (value, valueType) => {
+    let valueRepresentation = value;
+    if (Array.isArray(value)) {
+        valueRepresentation = `[${value}]`;
+    } else if (valueType.type === "string") {
+        valueRepresentation = `"${value}"`
+    } else if (valueType.type === "object") {
+        valueRepresentation = formatObject(value);
+    }
+    return valueRepresentation;
 };

@@ -1,6 +1,6 @@
 const y = require("../src/index");
 
-describe("Type checking JS primitives", () => {
+describe("Type checking primitives", () => {
 
     function a(theString, theNumber, theBoolean, theArray) {
         y(
@@ -26,7 +26,8 @@ describe("Type checking JS primitives", () => {
 
 });
 
-describe("Type checking arrays of JS primitives", () => {
+
+describe("Type checking arrays of primitives", () => {
 
     function b(stringArray, numberArray, booleanArray) {
         y(
@@ -52,7 +53,6 @@ describe("Type checking arrays of JS primitives", () => {
     });
 
 });
-
 
 
 describe("Handling null/undefined values", () => {
@@ -126,53 +126,65 @@ describe("Type checking nullable and union types", () => {
 
 describe("Type checking value types", () => {
 
-    function d(var1, var2, var3) {
+    function e(var1, var2, var3) {
         y(
             [var1, y.values("one", "two")],
-            [var2, y.values(3, 4, 5)],
+            [var2, y.values("three", 4, 5)],
             [var3, y.values(9, false), null],
         );
     }
 
     it("doesn't throw on fully matching types", () => {
-        d("one", 4, false);
-        d("one", 5, 9);
-        d("two", 3, null);
+        e("one", 4, false);
+        e("one", 5, 9);
+        e("two", "three", null);
     });
 
-/*    it("throws on wrong types", () => {
+    it("throws on wrong types", () => {
         expect(
-            () => d("four", 3, null)
+            () => e("four", 3, null)
         ).toThrow(
-            new TypeError('5 is of the wrong type. Expected either string, array of string or null, but got number.')
+            new TypeError('"four" is of the wrong type. Expected one of values {"one", "two"}, but got value {"four"}.')
         );
-    });*/
+
+        expect(
+            () => e("one", 8, null)
+        ).toThrow(
+            new TypeError('8 is of the wrong type. Expected one of values {"three", 4, 5}, but got value {8}.')
+        );
+
+        expect(
+            () => e("one", {b: 8}, null)
+        ).toThrow(
+            new TypeError('{ b: 8 } is of the wrong type. Expected one of values {"three", 4, 5}, but got value {{ b: 8 }}.')
+        );
+    });
 
 });
 
 describe("Type checking range types", () => {
 
-    function e(var1) {
+    function f(var1) {
         y(
             [var1, y.range(2, 7)],
         );
     }
 
     it("doesn't throw on fully matching types", () => {
-        e(5);
-        e(2);
-        e(7);
+        f(5);
+        f(2);
+        f(7);
     });
 
     it("throws on wrong types", () => {
         expect(
-            () => e(1)
+            () => f(1)
         ).toThrow(
             new TypeError('1 is of the wrong type. Expected a number in range {2 - 7}, but got value {1}.')
         );
 
         expect(
-            () => e("gh")
+            () => f("gh")
         ).toThrow(
             new TypeError('"gh" is of the wrong type. Expected a number in range {2 - 7}, but got string.')
         );
