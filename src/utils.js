@@ -67,7 +67,7 @@ const normalizeTypeAssertion = (type) => {
         }
     }
 
-    if ("isYpeType" in type || type instanceof YpeType) {
+    if (type instanceof YpeType) {
         return type;
     }
 };

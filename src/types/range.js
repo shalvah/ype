@@ -4,7 +4,6 @@ const YpeType = require('./basetype');
 
 // Range type
 class RangeType extends YpeType {
-
     constructor(lower, upper) {
         super();
         this.lower = lower;
