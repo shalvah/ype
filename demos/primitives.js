@@ -38,8 +38,9 @@ try {
     console.log(e.stack);
 }
 
+class X{ constructor() { this.a = 2 }}
 try {
-    doSomething2( {}, {});
+    doSomething2( {}, new X);
 } catch (e) {
     console.log(e.stack);
 }

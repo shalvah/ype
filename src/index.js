@@ -46,19 +46,20 @@ const normalizeType = (type) => {
 const checkType = (valueTypeOf, normalizedType, value) => {
     const expectedType = normalizedType.type;
     if (typeof expectedType === "string") {
-        return valueTypeOf === normalizedType.type || valueTypeOf;
+        return valueTypeOf === normalizedType.type || {type: valueTypeOf, name: valueTypeOf};
     }
 
     if (Array.isArray(expectedType)) {
         if (expectedType[0] === "array") {
             // the second argument is the type of element in the array
             if (!Array.isArray(value)) {
-                return getTypeOf(value);
+                const type = getTypeOf(value);
+                return {type, name: type};
             }
             for (let itemValue of value) {
                 const actualType = checkType(getTypeOf(itemValue), {type: expectedType[1]}, itemValue);
                 if (actualType !== true) {
-                    return "array containing " + actualType;
+                    return {type: 'array', name: "array containing " + actualType.type};
                 }
             }
             // Empty arrays get a pass
@@ -89,11 +90,13 @@ const buildMessage = (value, actualType, expectedTypeNames) => {
     let valueRepresentation = value;
     if (Array.isArray(value)) {
         valueRepresentation = `[${value}]`;
-    } else if (actualType === "string") {
+    } else if (actualType.type === "string") {
         valueRepresentation = `"${value}"`
+    } else if (actualType.type === "object") {
+        valueRepresentation = formatObject(value);
     }
 
-    return `${valueRepresentation} is of the wrong type. Expected ${type}, but got ${actualType}.`
+    return `${valueRepresentation} is of the wrong type. Expected ${type}, but got ${actualType.name}.`
 };
 
 const getTypeOf = (value) => {
@@ -136,6 +139,7 @@ const ype = (...typeAssertions) => {
     }
 };
 
+// Value type
 ype.values = (...values) => {
   return {
       values,
@@ -150,11 +154,13 @@ ype.values = (...values) => {
               }
           }
 
-          return `value {${value}}`;
+          return {type: "value", name: `value {${value}}`};
       }
   };
 };
 
+// Range type
+// Only valid for numbers
 ype.range = (lower, upper) => {
   return {
       range: {
@@ -167,18 +173,21 @@ ype.range = (lower, upper) => {
       isYpeType: true,
       inherits: ['number'],
       check(value, valueTypeOf) {
-          // Range type
-          // Only valid for numbers
           if (valueTypeOf === "number") {
               if (lower <= value && value <= upper) {
                   return true;
               }
-              return `value {${value}}`;
+              return {type: valueTypeOf, name: `value {${value}}`};
           }
 
-          return valueTypeOf;
+          return {type: valueTypeOf, name: valueTypeOf};
       }
   };
 };
 
 module.exports = ype;
+
+const formatObject = (object) => {
+    const { inspect } = require('util');
+    return `${inspect(object, {breakLength: Infinity, compact: true, depth: 2 })}`
+};
