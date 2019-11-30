@@ -295,3 +295,46 @@ describe('Supports custom types', () => {
 
 });
 
+
+describe('Type checking object instances', () => {
+
+    class X {}
+    class Y extends X {}
+    class MyError extends TypeError {}
+
+    function i(var1, var2) {
+        y(
+            [var1, y.instanceOf(Error)], [var2, y.instanceOf(X)],
+        );
+    }
+
+    it('doesn\'t throw on fully matching types', () => {
+        i(new Error, new X);
+        i(new Error, new Y);
+        i(new TypeError, new Y);
+        i(new MyError, new X);
+    });
+
+    it('throws on wrong type', () => {
+        expect(
+            () => i(1, new X)
+        ).toThrow(
+            new TypeError("1 is of the wrong type. Expected an instance of class Error, but got number.")
+        );
+
+        expect(
+            () => i(new Error, "hahaha")
+        ).toThrow(
+            new TypeError("'hahaha' is of the wrong type. Expected an instance of class X, but got string.")
+        );
+
+        expect(
+            () => i(new X)
+        ).toThrow(
+            new TypeError("X {} is of the wrong type. Expected an instance of class Error, but got an instance of class X.")
+        );
+
+    });
+
+});
+

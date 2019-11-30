@@ -4,6 +4,7 @@ const {getValueRepresentation, getTypeOf, normalizeTypeAssertion, checkType} = r
 const ValueType = require('./types/value');
 const RangeType = require('./types/range');
 const ShapeType = require('./types/shape');
+const InstanceType = require('./types/instance');
 
 const buildTypeErrorMessage = (value, actualType, expectedTypeNames) => {
     let type = "";
@@ -45,13 +46,13 @@ const ype = (...typeAssertions) => {
     }
 };
 
-// Range type
-// Only valid for numbers
 ype.range = (lower, upper) => new RangeType(lower, upper);
 
 ype.shape = (shape) => new ShapeType(shape);
 
 ype.values = (...values) => new ValueType(values);
+
+ype.instanceOf = (classConstructor) => new InstanceType(classConstructor);
 
 ype.makeCustomType = ({name, inherits, check}) => {
     const YpeType = require('./types/basetype');
