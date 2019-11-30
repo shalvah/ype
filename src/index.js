@@ -53,4 +53,13 @@ ype.shape = (shape) => new ShapeType(shape);
 
 ype.values = (...values) => new ValueType(values);
 
+ype.makeCustomType = ({name, inherits, check}) => {
+    const YpeType = require('./types/basetype');
+    const type = new YpeType;
+    name && (type.name = name);
+    type.inherits = inherits;
+    type.check = check.bind(type);
+    return type;
+};
+
 module.exports = ype;

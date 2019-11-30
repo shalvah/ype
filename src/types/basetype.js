@@ -18,6 +18,10 @@ class YpeType {
         return this._name;
     }
 
+    set name(name) {
+        this._name = name;
+    }
+
     check(value, valueType) {
         return true;
     }

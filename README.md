@@ -89,21 +89,28 @@ const UserType = y.shape({
   name: [String],
 });
 
-const PinCodeType = {
-  name:`a PIN code (4-digit string)`,
-  inherits: ['string'],
-  // The check should return true if the value is valid. 
-  // Otherwise it returns type information about the value.
-  check(value, type) {
-    // At this point, value is definitely a string
-    // (because of our `inherits` specifier earlier
-    if (value.length === 4) {
-      return true;
-    }
 
-    return {type, name: `${value} ("${value.length}" digits)`}
-  }
-}
+const PinCodeType = y.makeCustomType({
+    name: `a PIN code (4-digit string)`,
+    inherits: ['string'],
+    // The check should return true if the value is valid.
+    // Otherwise it returns type information about the value.
+    check(value, valueType) {
+        // At this point, value is definitely a string
+        // (because of our `inherits` specifier earlier
+        if (value.length !== 4) {
+            return {type: valueType, name: `'${value} (${value.length} digits)`}
+        }
+
+        for (let char of value) {
+            if (isNaN(parseInt(char, 10))) {
+                return {type: valueType, name: `a non-digit '${char}'`}
+            }
+        }
+
+        return true;
+    }
+});
 
 // then use:
 function savePin(user, pinCode) {
@@ -112,12 +119,16 @@ function savePin(user, pinCode) {
   // save the PIN
 }
 
-// Will throw error: "hahaha" is the wrong type. 
-// Expected a PIN code (4-digit string), but got "hahaha" (6 digits).
+// Will throw error: 'hahaha' is the wrong type. 
+// Expected a PIN code (4-digit string), but got 'hahaha' (6 digits).
 savePin({ id: "dy53hd", name: "Joe", }, "hahaha");
 
 // Will throw error: 8 is the wrong type. 
 // Expected a PIN code (4-digit string), but got number.
 savePin({ id: "dy53hd", name: "Joe", }, 6);
+
+// Will throw error: '6d44' is of the wrong type. 
+// Expected a PIN code (4-digit string), but got a non-digit 'd'
+savePin({ id: "dy53hd", name: "Joe", }, "6d44");
 
 ```

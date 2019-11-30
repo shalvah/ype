@@ -235,3 +235,63 @@ describe('Type checking shape types', () => {
 
 });
 
+
+describe('Supports custom types', () => {
+
+    const PinCodeType = y.makeCustomType({
+        name: `a PIN code (4-digit string)`,
+        inherits: ['string'],
+        // The check should return true if the value is valid.
+        // Otherwise it returns type information about the value.
+        check(value, valueType) {
+            // At this point, value is definitely a string
+            // (because of our `inherits` specifier earlier
+            if (value.length !== 4) {
+                return {type: valueType, name: `'${value}' (${value.length} digits)`}
+            }
+
+            for (let char of value) {
+                if (isNaN(parseInt(char, 10))) {
+                    return {type: valueType, name: `a non-digit '${char}'`}
+                }
+            }
+
+            return true;
+        }
+    });
+
+    function h(var1) {
+        y(
+            [var1, PinCodeType],
+        );
+    }
+
+    it('doesn\'t throw on fully matching types', () => {
+        h('1234');
+        h('1111');
+        h('4972');
+    });
+
+    it('throws on wrong type', () => {
+        expect(
+            () => h(1)
+        ).toThrow(
+            new TypeError("1 is of the wrong type. Expected a PIN code (4-digit string), but got number.")
+        );
+
+        expect(
+            () => h("hahaha")
+        ).toThrow(
+            new TypeError("'hahaha' is of the wrong type. Expected a PIN code (4-digit string), but got 'hahaha' (6 digits).")
+        );
+
+        expect(
+            () => h('6d44')
+        ).toThrow(
+            new TypeError("'6d44' is of the wrong type. Expected a PIN code (4-digit string), but got a non-digit 'd'.")
+        );
+
+    });
+
+});
+
