@@ -260,12 +260,6 @@ describe('Supports custom types', () => {
                 return {type: valueType, name: `'${value}' (${value.length} digits)`}
             }
 
-            for (let char of value) {
-                if (isNaN(parseInt(char, 10))) {
-                    return {type: valueType, name: `a non-digit '${char}'`}
-                }
-            }
-
             return true;
         }
     });
