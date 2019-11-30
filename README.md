@@ -92,7 +92,7 @@ const UserType = y.shape({
 
 const PinCodeType = y.makeCustomType({
     name: `a PIN code (4-digit string)`,
-    inherits: ['string'],
+    inherits: [String],
     // The check should return true if the value is valid.
     // Otherwise it returns type information about the value.
     check(value, valueType) {

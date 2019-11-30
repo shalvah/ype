@@ -8,7 +8,7 @@ class RangeType extends YpeType {
         super();
         this.lower = lower;
         this.upper = upper;
-        this.inherits = ['number'];
+        this.inherits = [Number];
     }
 
     computeName() {

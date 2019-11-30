@@ -101,7 +101,7 @@ const checkType = (valueTypeOf, normalizedType, value) => {
     if (normalizedType instanceof YpeType) {
         let mismatchedType;
         for (let superset of normalizedType.inherits || []) {
-            if ((mismatchedType = checkType(valueTypeOf, { type: superset }, value)) !== true) {
+            if ((mismatchedType = checkType(valueTypeOf, normalizeTypeAssertion(superset), value)) !== true) {
                 return mismatchedType;
             }
         }

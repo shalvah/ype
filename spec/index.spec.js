@@ -238,14 +238,24 @@ describe('Type checking shape types', () => {
 
 describe('Supports custom types', () => {
 
+    const NumericStringType = y.makeCustomType({
+        name: `a numeric string`,
+        inherits: [String],
+        check(value, valueType) {
+            for (let char of value) {
+                if (isNaN(parseInt(char, 10))) {
+                    return {type: valueType, name: `a non-digit '${char}'`}
+                }
+            }
+
+            return true;
+        }
+    });
+
     const PinCodeType = y.makeCustomType({
         name: `a PIN code (4-digit string)`,
-        inherits: ['string'],
-        // The check should return true if the value is valid.
-        // Otherwise it returns type information about the value.
+        inherits: [NumericStringType],
         check(value, valueType) {
-            // At this point, value is definitely a string
-            // (because of our `inherits` specifier earlier
             if (value.length !== 4) {
                 return {type: valueType, name: `'${value}' (${value.length} digits)`}
             }
@@ -282,7 +292,7 @@ describe('Supports custom types', () => {
         expect(
             () => h("hahaha")
         ).toThrow(
-            new TypeError("'hahaha' is of the wrong type. Expected a PIN code (4-digit string), but got 'hahaha' (6 digits).")
+            new TypeError("'hahaha' is of the wrong type. Expected a PIN code (4-digit string), but got a non-digit 'h'.")
         );
 
         expect(

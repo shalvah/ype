@@ -1,6 +1,5 @@
 - Shapes - nested, custom types
 - Coercion/strict
-- inherits: from custom types
 
 # Error output:
 https://stackoverflow.com/questions/22725296/how-to-reduce-stack-trace-when-throwing-error-point-to-call-site

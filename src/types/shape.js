@@ -8,7 +8,7 @@ class ShapeType extends YpeType {
     constructor(shape) {
         super();
         this.shape = shape;
-        this.inherits = ['object'];
+        this.inherits = [Object];
     }
 
     computeName() {

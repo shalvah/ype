@@ -1,13 +1,23 @@
 const y = require("../src");
 
+const NumericStringType = y.makeCustomType({
+    name: `a numeric string`,
+    inherits: [String],
+    check(value, valueType) {
+        for (let char of value) {
+            if (isNaN(parseInt(char, 10))) {
+                return {type: valueType, name: `a non-digit '${char}'`}
+            }
+        }
+
+        return true;
+    }
+});
+
 const PinCodeType = y.makeCustomType({
     name: `a PIN code (4-digit string)`,
-    inherits: ['string'],
-    // The check should return true if the value is valid.
-    // Otherwise it returns type information about the value.
+    inherits: [NumericStringType],
     check(value, valueType) {
-        // At this point, value is definitely a string
-        // (because of our `inherits` specifier earlier
         if (value.length !== 4) {
             return {type: valueType, name: `'${value}' (${value.length} digits)`}
         }
