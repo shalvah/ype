@@ -1,6 +1,12 @@
 'use strict';
 
-const {getValueRepresentation, getTypeOf, normalizeTypeAssertion, checkType} = require('./utils');
+const {
+    getValueRepresentation,
+    getTypeOf,
+    normalizeTypeAssertion,
+    checkType,
+    getArrayAsFriendlyString
+} = require('./utils');
 const ValueType = require('./types/value');
 const RangeType = require('./types/range');
 const ShapeType = require('./types/shape');
@@ -11,7 +17,7 @@ const buildTypeErrorMessage = (value, actualType, expectedTypeNames) => {
     if (expectedTypeNames.length === 1) {
         type = expectedTypeNames[0];
     } else {
-        type = `either ${expectedTypeNames.slice(0, -1).join(', ')} or ${expectedTypeNames[expectedTypeNames.length - 1]}`;
+        type = `either ${getArrayAsFriendlyString(expectedTypeNames)}`;
     }
 
     const valueRepresentation = getValueRepresentation(value, actualType);

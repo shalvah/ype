@@ -129,13 +129,13 @@ describe('Type checking nullable and union types', () => {
         expect(
             () => d('yes', true, 5)
         ).toThrow(
-            new TypeError("5 is of the wrong type. Expected either string, array of string or null, but got number.")
+            new TypeError("5 is of the wrong type. Expected either string, array of string, or null, but got number.")
         );
 
         expect(
             () => d('yes', true, [5])
         ).toThrow(
-            new TypeError("[5] is of the wrong type. Expected either string, array of string or null, but got array.") // TODO this should be 'array containing number'
+            new TypeError("[5] is of the wrong type. Expected either string, array of string, or null, but got array.")
         );
     });
 

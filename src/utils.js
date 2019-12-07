@@ -160,4 +160,5 @@ module.exports = {
     getTypeOf,
     normalizeTypeAssertion,
     checkType,
+    getArrayAsFriendlyString,
 };
