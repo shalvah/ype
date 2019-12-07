@@ -29,27 +29,47 @@ describe('Type checking primitives', () => {
 
 describe('Type checking arrays of primitives', () => {
 
-    function b(stringArray, numberArray, booleanArray) {
+    function b(stringArray, numberArray, booleanArray, multiArray = [1]) {
         y(
             [stringArray, [String]],
-            [numberArray, [Number]],
+            [numberArray, y.arrayOf(Number)],
             [booleanArray, [Boolean]],
+            [multiArray, [Boolean, Number]],
         );
     }
 
     it('doesn\'t throw on fully matching types', () => {
         b(['yes'], [1], [true, false]);
         b(['yes'], [1], [true, false]);
-        b(['yes'], [1], [true, false]);
+        b(['yes'], [1], [true], [3]);
+        b(['yes'], [1], [true], [3, 1]);
+        b(['yes'], [1], [true], [false, 3]);
     });
 
     it('throws on wrong types', () => {
         expect(
             () => b(['yes'], ['1'], [true])
-        ).toThrow(new TypeError("[1] is of the wrong type. Expected array of number, but got array containing string."));
+        ).toThrow(
+            new TypeError("[1] is of the wrong type. Expected array of number, but got array containing string.")
+        );
+
         expect(
             () => b('yes', ['1'], [true])
-        ).toThrow(new TypeError("'yes' is of the wrong type. Expected array of string, but got string."));
+        ).toThrow(
+            new TypeError("'yes' is of the wrong type. Expected array of string, but got string.")
+        );
+
+        expect(
+            () => b(['yes'], [1], [true], 9)
+        ).toThrow(
+            new TypeError("9 is of the wrong type. Expected array of boolean or number, but got number.")
+        );
+
+        expect(
+            () => b(['yes'], [1], [true], ['a'])
+        ).toThrow(
+            new TypeError("[a] is of the wrong type. Expected array of boolean or number, but got array containing string.")
+        );
     });
 
 });
@@ -71,15 +91,13 @@ describe('Handling null/undefined values', () => {
         ).toThrow(new TypeError("undefined is of the wrong type. Expected boolean, but got undefined."));
     });
 
-    it('throws on explicit undefined values', () => {
+    it('throws on explicit null/undefined values', () => {
         expect(
             () => c('1', 1, undefined)
         ).toThrow(
             new TypeError("undefined is of the wrong type. Expected boolean, but got undefined.")
         );
-    });
 
-    it('throws on explicit undefined values', () => {
         expect(
             () => c('1', 1, null)
         ).toThrow(

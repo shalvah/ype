@@ -46,6 +46,8 @@ const ype = (...typeAssertions) => {
     }
 };
 
+ype.arrayOf = (...types) => types;
+
 ype.range = (lower, upper) => new RangeType(lower, upper);
 
 ype.shape = (shape) => new ShapeType(shape);
