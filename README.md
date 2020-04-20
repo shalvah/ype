@@ -2,7 +2,7 @@
 
 **This project is still in its experimental stages.**
 
-TypeScript is cool, but it only gives you static type checking. Type errors can still slip into your code. Ype is designed to give you runtime type assertions in JavaScript, with **minimal performance overhead** and **helpful error messages**.
+TypeScript is cool, but it only gives you static type checking. Type errors can still slip into your code. Ype is designed to give you runtime type assertions in Node.js, with **minimal performance overhead** and **helpful error messages**.
 
 You can use Ype anywhere you need to, but the major use case Ype was built for is in function arguments.
 
@@ -72,7 +72,7 @@ More:
 ```js
 // Going further
 function doSomething(var1, var2, var3, var4, var5, var6) {
-    types(
+    y(
         [var1, y.union(String, [String])],  // union types
         [var1, String, [String]],  // also union types
         [var1, String, null],  // nullable types
@@ -95,7 +95,7 @@ const PinCodeType = y.makeCustomType({
     inherits: [String],
     // The check should return true if the value is valid.
     // Otherwise it returns type information about the value.
-    check(value, valueType) {
+    compareTypesAndGetMismatchingTypeInfovalue, valueType) {
         // At this point, value is definitely a string
         // (because of our `inherits` specifier earlier
         if (value.length !== 4) {
@@ -132,3 +132,5 @@ savePin({ id: "dy53hd", name: "Joe", }, 6);
 savePin({ id: "dy53hd", name: "Joe", }, "6d44");
 
 ```
+
+## Custon Type API

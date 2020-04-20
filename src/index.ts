@@ -1,16 +1,21 @@
 'use strict';
 
+import {DesiredType} from "./type-declarations";
+
 const {
     getValueRepresentation,
-    getTypeOf,
+    getRealTypeOf,
     normalizeTypeAssertion,
-    checkType,
+    compareTypesAndGetMismatchingTypeInfo,
     getArrayAsFriendlyString
 } = require('./utils');
 const ValueType = require('./types/value');
 const RangeType = require('./types/range');
 const ShapeType = require('./types/shape');
 const InstanceType = require('./types/instance');
+
+type TypeAssertion = Array<any>;
+
 
 const buildTypeErrorMessage = (value, actualType, expectedTypeNames) => {
     let type = "";
@@ -25,26 +30,27 @@ const buildTypeErrorMessage = (value, actualType, expectedTypeNames) => {
     return `${valueRepresentation} is of the wrong type. Expected ${type}, but got ${actualType.name}.`
 };
 
-const assert = (value, types, error) => {
-    let valueTypeOf = getTypeOf(value);
+const assert = (value: any, desiredTypes: DesiredType[], error: TypeError) => {
+    let realJsTypeOfValue = getRealTypeOf(value);
 
     let expectedTypeNames = [];
-    let actualType = "";
+    let mismatchingType = "";
 
-    for (let type of types) {
-        const normalizedType = normalizeTypeAssertion(type);
-        actualType = checkType(valueTypeOf, normalizedType, value);
-        if (actualType === true) {
+    for (let desiredType of desiredTypes) {
+        const desiredTypeInfo = normalizeTypeAssertion(desiredType);
+        mismatchingType = compareTypesAndGetMismatchingTypeInfo(realJsTypeOfValue, desiredTypeInfo, value);
+        if (mismatchingType === null) {
             return;
         }
-        expectedTypeNames.push(normalizedType.name);
+        expectedTypeNames.push(desiredTypeInfo.name);
     }
 
-    error.message = buildTypeErrorMessage(value, actualType, expectedTypeNames);
+    error.message = buildTypeErrorMessage(value, mismatchingType, expectedTypeNames);
     throw error;
 };
 
-const ype = (...typeAssertions) => {
+const ype = (...typeAssertions: TypeAssertion[]) => {
+    // Capture stack trace now so we don't show a nested function
     const error = new TypeError();
     Error.captureStackTrace(error, ype);
     for (let [value, ...types] of typeAssertions) {
@@ -62,12 +68,12 @@ ype.values = (...values) => new ValueType(values);
 
 ype.instanceOf = (classConstructor) => new InstanceType(classConstructor);
 
-ype.makeCustomType = ({name, inherits, check}) => {
-    const YpeType = require('./types/basetype');
-    const type = new YpeType;
+ype.makeCustomType = ({name, inherits, compareTypesAndGetMismatchingTypeInfo}) => {
+    const BaseType = require('./types/base');
+    const type = new BaseType;
     name && (type.name = name);
     type.inherits = inherits;
-    type.check = check.bind(type);
+    type.compareTypesAndGetMismatchingTypeInfo = compareTypesAndGetMismatchingTypeInfo.bind(type);
     return type;
 };
 

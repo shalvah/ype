@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2018",
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "outDir": "dist",
+    "declarationDir": "types",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "node_modules",
+    "spec",
+    "demos"
+  ],
+  "include": [
+    "src/"
+  ],
+  "types": [
+    "node"
+  ]
+}

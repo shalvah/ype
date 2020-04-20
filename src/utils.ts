@@ -1,5 +1,8 @@
+import {DesiredType, DesiredTypeInfo, MismatchingTypeInfo, RealJsType, YpeType} from "./type-declarations";
+
 const {inspect} = require('util');
-const YpeType = require('./types/basetype');
+const BaseType = require('./types/base');
+
 
 const formatObject = (object) => {
     const formatted = `${inspect(object, {breakLength: Infinity, compact: true, depth: 2})}`
@@ -18,7 +21,7 @@ const getValueRepresentation = (value, valueType) => {
     return valueRepresentation;
 };
 
-const getTypeOf = (value) => {
+const getRealTypeOf = (value: any): RealJsType => {
     if (Array.isArray(value)) {
         return "array";
     }
@@ -30,45 +33,45 @@ const getTypeOf = (value) => {
     return typeof value;
 };
 
-const normalizeTypeAssertion = (type) => {
-    if (type === String) {
+const normalizeTypeAssertion = (desiredType: DesiredType): DesiredTypeInfo => {
+    if (desiredType === String) {
         return {type: "string", name: "string"};
     }
 
-    if (type === Number) {
+    if (desiredType === Number) {
         return {type: "number", name: "number"};
     }
 
-    if (type === Boolean) {
+    if (desiredType === Boolean) {
         return {type: "boolean", name: "boolean"};
     }
 
-    if (type === Object) {
+    if (desiredType === Object) {
         return {type: "object", name: "object"};
     }
 
-    if (type === Function) {
+    if (desiredType === Function) {
         return {type: "function", name: "function"};
     }
 
-    if (type === null) {
+    if (desiredType === null) {
         return {type: "null", name: "null"};
     }
 
-    if (type === Array) {
+    if (desiredType === Array) {
         return {type: "array", name: "array"};
     }
 
-    if (Array.isArray(type)) {
+    if (Array.isArray(desiredType)) {
         // an array of X, Y or Z
         const validItemTypes = {
             names: [],
             types: [],
         };
-        for (let itemType of type) {
+        for (let itemType of desiredType) {
             const T = normalizeTypeAssertion(itemType);
             validItemTypes.names.push(T.name);
-            validItemTypes.types.push(T.type);
+            validItemTypes.types.push(isCustomType(T) ? T.name : T.type);
         }
 
         return {
@@ -79,29 +82,38 @@ const normalizeTypeAssertion = (type) => {
         };
     }
 
-    if (type instanceof YpeType) {
-        return type;
+    if (isCustomType(desiredType)) {
+        return desiredType;
     }
 };
 
-// Returns true or the actual types
-const checkType = (valueTypeOf, normalizedType, value) => {
-    const expectedType = normalizedType.type;
+const isCustomType = (type: any): type is YpeType => {
+    return type instanceof BaseType;
+};
+
+const compareTypesAndGetMismatchingTypeInfo = (
+    realJsTypeOfValue: RealJsType,
+    desiredTypeInfo: YpeType | {type: RealJsType | Array<RealJsType> },
+    value: any
+): MismatchingTypeInfo => {
+    // @ts-ignore
+    const expectedType = desiredTypeInfo.type;
     if (typeof expectedType === "string") {
-        return valueTypeOf === normalizedType.type || {type: valueTypeOf, name: valueTypeOf};
+        return realJsTypeOfValue === (desiredTypeInfo as {type: RealJsType | Array<RealJsType>}).type
+            ? null : {type: realJsTypeOfValue, name: realJsTypeOfValue};
     }
 
     if (Array.isArray(expectedType)) {
         if (expectedType[0] === "array") {
             // The remaining arguments are the allowed types of element in the array
             if (!Array.isArray(value)) {
-                const type = getTypeOf(value);
+                const type = getRealTypeOf(value);
                 return {type, name: type};
             }
 
             if (value.length === 0) {
                 // Empty arrays get a pass
-                return true;
+                return null;
             }
 
             let actualType;
@@ -109,7 +121,7 @@ const checkType = (valueTypeOf, normalizedType, value) => {
             for (let itemValue of value) {
                 let itemPassing = false;
                 for (let possibleType of possibleTypes) {
-                    actualType = checkType(getTypeOf(itemValue), {type: possibleType}, itemValue);
+                    actualType = compareTypesAndGetMismatchingTypeInfo(getRealTypeOf(itemValue), {type: possibleType}, itemValue);
                     if (actualType === true) {
                         // This item matches the spec, continue to next item.
                         itemPassing = true;
@@ -121,19 +133,21 @@ const checkType = (valueTypeOf, normalizedType, value) => {
                 }
             }
 
-            return true;
+            return null;
         }
     }
 
 
-    if (normalizedType instanceof YpeType) {
+    if (isCustomType(desiredTypeInfo)) {
         let mismatchedType;
-        for (let superset of normalizedType.inherits || []) {
-            if ((mismatchedType = checkType(valueTypeOf, normalizeTypeAssertion(superset), value)) !== true) {
+        for (let superset of desiredTypeInfo.inherits || []) {
+            if ((mismatchedType = compareTypesAndGetMismatchingTypeInfo(realJsTypeOfValue, normalizeTypeAssertion(superset), value)) !== null) {
                 return mismatchedType;
             }
         }
-        return normalizedType.check(value, valueTypeOf);
+
+        mismatchedType = desiredTypeInfo.compareTypesAndGetMismatchingTypeInfo(value, realJsTypeOfValue);
+        return mismatchedType === true ? null : mismatchedType;
     }
 };
 
@@ -157,8 +171,8 @@ const getArrayAsFriendlyString = (array) => {
 
 module.exports = {
     getValueRepresentation,
-    getTypeOf,
+    getRealTypeOf,
     normalizeTypeAssertion,
-    checkType,
+    compareTypesAndGetMismatchingTypeInfo,
     getArrayAsFriendlyString,
 };

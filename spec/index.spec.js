@@ -1,4 +1,4 @@
-const y = require('../src/index');
+const y = require('../dist/index');
 
 describe('Type checking primitives', () => {
 
@@ -225,7 +225,7 @@ describe('Type checking shape types', () => {
         g({a: 'go', b: null, c: ['hi', 'ho']});
     });
 
-    it('throws on wrong type of property', () => {
+    it('throws on wrong type of value', () => {
         expect(
             () => g(1)
         ).toThrow(
@@ -239,8 +239,6 @@ describe('Type checking shape types', () => {
         ).toThrow(
             new TypeError("{ a: 1, b: 4, c: 'hi' } is of the wrong type. Expected an object with shape { a: [ String ], b: [ Number, null ], c: [ [ String ], String ] }, but got property a as type number.")
         );
-
-        // todo value types
     });
 
     it('throws on missing property', () => {
@@ -254,12 +252,12 @@ describe('Type checking shape types', () => {
 });
 
 
-describe('Supports custom types', () => {
+describe('Typechecking custom types', () => {
 
     const NumericStringType = y.makeCustomType({
         name: `a numeric string`,
         inherits: [String],
-        check(value, valueType) {
+        compareTypesAndGetMismatchingTypeInfo(value, valueType) {
             for (let char of value) {
                 if (isNaN(parseInt(char, 10))) {
                     return {type: valueType, name: `a non-digit '${char}'`}
@@ -273,7 +271,7 @@ describe('Supports custom types', () => {
     const PinCodeType = y.makeCustomType({
         name: `a PIN code (4-digit string)`,
         inherits: [NumericStringType],
-        check(value, valueType) {
+        compareTypesAndGetMismatchingTypeInfo(value, valueType) {
             if (value.length !== 4) {
                 return {type: valueType, name: `'${value}' (${value.length} digits)`}
             }
@@ -360,3 +358,43 @@ describe('Type checking object instances', () => {
 
 });
 
+
+describe('Type checking shape types with custom types', () => {
+
+    function j(var1, var2 = null) {
+        y(
+            [var1, y.shape({a: [y.arrayOf(Number)]})],
+            [var2, null, y.shape({a: [y.values(3, "a")]})],
+        );
+    }
+
+    it('doesn\'t throw on fully matching types', () => {
+        j({a: [1, 3]});
+        j({a: [1, 3]},  {a: 3});
+        j({a: [1, 3]},  {a: "a"});
+    });
+
+    it('throws on wrong type of value', () => {
+        expect(
+            () => j(1)
+        ).toThrow(
+            new TypeError("1 is of the wrong type. Expected an object with shape { a: [ [ Number ] ] }, but got number.")
+        );
+    });
+
+    it('throws on wrong type of property', () => {
+        expect(
+            () => j({a: 1})
+        ).toThrow(
+            new TypeError("{ a: 1 } is of the wrong type. Expected an object with shape { a: [ [ Number ] ] }, but got property a as type number.")
+        );
+    });
+
+    it('throws on missing property', () => {
+        expect(
+            () => j({b: 4})
+        ).toThrow(
+            new TypeError(`{ b: 4 } is of the wrong type. Expected an object with shape { a: [ [ Number ] ] }, but got an object with missing property a.`)
+        );
+    });
+});

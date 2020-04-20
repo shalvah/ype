@@ -3,7 +3,7 @@ const y = require("../src");
 const NumericStringType = y.makeCustomType({
     name: `a numeric string`,
     inherits: [String],
-    check(value, valueType) {
+    compareTypesAndGetMismatchingTypeInfo(value, valueType) {
         for (let char of value) {
             if (isNaN(parseInt(char, 10))) {
                 return {type: valueType, name: `a non-digit '${char}'`}
@@ -17,7 +17,7 @@ const NumericStringType = y.makeCustomType({
 const PinCodeType = y.makeCustomType({
     name: `a PIN code (4-digit string)`,
     inherits: [NumericStringType],
-    check(value, valueType) {
+    compareTypesAndGetMismatchingTypeInfo(value, valueType) {
         if (value.length !== 4) {
             return {type: valueType, name: `'${value}' (${value.length} digits)`}
         }

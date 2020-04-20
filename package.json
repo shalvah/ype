@@ -26,7 +26,10 @@
   },
   "homepage": "https://github.com/shalvah/ype#readme",
   "devDependencies": {
+    "@types/node": "^13.13.0",
     "eslint": "^6.7.1",
-    "jasmine": "^3.5.0"
-  }
+    "jasmine": "^3.5.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {}
 }
