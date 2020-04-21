@@ -99,7 +99,7 @@ const compareTypesAndGetMismatchingTypeInfo = (realJsTypeOfValue, desiredTypeInf
                 let itemPassing = false;
                 for (let possibleType of possibleTypes) {
                     actualType = compareTypesAndGetMismatchingTypeInfo(getRealTypeOf(itemValue), { type: possibleType }, itemValue);
-                    if (actualType === true) {
+                    if (actualType === null) {
                         // This item matches the spec, continue to next item.
                         itemPassing = true;
                         break;
