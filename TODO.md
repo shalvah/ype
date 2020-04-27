@@ -1,7 +1,6 @@
 - shape check is buggy
 - Shapes - nested, custom types
 - undefined/null
-- symbol, bigint
 - Coercion/strict
 - type = ypetypes[]
 

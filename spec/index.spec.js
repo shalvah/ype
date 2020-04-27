@@ -402,3 +402,43 @@ describe('Type checking shape types with custom types', () => {
         );
     });
 });
+
+
+describe('Type checking arrays of advanced types', () => {
+
+    const NumericStringType = y.makeCustomType({
+        name: `a numeric string`,
+        inherits: [String],
+        compareTypesAndGetMismatchingTypeInfo(value, valueType) {
+            for (let char of value) {
+                if (isNaN(parseInt(char, 10))) {
+                    return {type: valueType, name: `a non-digit '${char}'`}
+                }
+            }
+
+            return true;
+        }
+    });
+
+    function k(var1) {
+        y(
+            [var1, NumericStringType, y.shape({value: [Number]}), y.values('one', 'two')],
+        );
+    }
+
+    it('doesn\'t throw on fully matching types', () => {
+        k('one');
+        k('two');
+        k({value: 6});
+        k('454657');
+    });
+
+    it('throws on wrong types', () => {
+        expect(
+            () => k('four')
+        ).toThrow(
+            new TypeError("'four' is of the wrong type. Expected either a numeric string, an object with shape { value: [ Number ] }, or one of values {'one', 'two'}, but got value {'four'}.")
+        );
+    });
+
+});
