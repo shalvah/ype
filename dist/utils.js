@@ -11,10 +11,10 @@ const getValueRepresentation = (value, valueType) => {
     if (Array.isArray(value)) {
         valueRepresentation = `[${value}]`;
     }
-    else if (valueType.type === "string") {
+    else if (valueType === "string") {
         valueRepresentation = `'${value}'`;
     }
-    else if (valueType.type === "object") {
+    else if (valueType === "object") {
         valueRepresentation = formatObject(value);
     }
     return valueRepresentation;
@@ -49,6 +49,12 @@ const normalizeTypeAssertion = (desiredType) => {
     }
     if (desiredType === Array) {
         return { type: "array", name: "array" };
+    }
+    if (desiredType === BigInt) {
+        return { type: "bigint", name: "bigint" };
+    }
+    if (desiredType === Symbol) {
+        return { type: "symbol", name: "symbol" };
     }
     if (Array.isArray(desiredType)) {
         // an array of X, Y or Z

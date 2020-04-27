@@ -9,13 +9,13 @@ const formatObject = (object) => {
     return formatted.replace(/\[Function: (\w+)?]/g, "$1")
 };
 
-const getValueRepresentation = (value, valueType) => {
+const getValueRepresentation = (value: any, valueType: RealJsType) => {
     let valueRepresentation = value;
     if (Array.isArray(value)) {
         valueRepresentation = `[${value}]`;
-    } else if (valueType.type === "string") {
+    } else if (valueType === "string") {
         valueRepresentation = `'${value}'`
-    } else if (valueType.type === "object") {
+    } else if (valueType === "object") {
         valueRepresentation = formatObject(value);
     }
     return valueRepresentation;
@@ -60,6 +60,14 @@ const normalizeTypeAssertion = (desiredType: DesiredType): DesiredTypeInfo => {
 
     if (desiredType === Array) {
         return {type: "array", name: "array"};
+    }
+
+    if (desiredType === BigInt) {
+        return {type: "bigint", name: "bigint"};
+    }
+
+    if (desiredType === Symbol) {
+        return {type: "symbol", name: "symbol"};
     }
 
     if (Array.isArray(desiredType)) {
@@ -122,7 +130,7 @@ const compareTypesAndGetMismatchingTypeInfo = (
                 let itemPassing = false;
                 for (let possibleType of possibleTypes) {
                     actualType = compareTypesAndGetMismatchingTypeInfo(getRealTypeOf(itemValue), {type: possibleType}, itemValue);
-                    if (actualType === true) {
+                    if (actualType === null) {
                         // This item matches the spec, continue to next item.
                         itemPassing = true;
                         break;
@@ -154,7 +162,7 @@ const compareTypesAndGetMismatchingTypeInfo = (
 // [1] becomes "1"
 // [1, 2] becomes "1 or 2"
 // [1, 2, 3] becomes "1, 2, or 3"
-const getArrayAsFriendlyString = (array) => {
+const getArrayAsFriendlyString = (array: string[]): string => {
     switch (array.length) {
         case 1:
             return array[0];

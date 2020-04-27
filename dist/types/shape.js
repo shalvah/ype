@@ -11,7 +11,7 @@ var Ype;
             this.inherits = [Object];
         }
         computeName() {
-            const shapeDescription = getValueRepresentation(this.shape, { type: 'object' });
+            const shapeDescription = getValueRepresentation(this.shape, 'object');
             return `an object with shape ${shapeDescription}`;
         }
         compareTypesAndGetMismatchingTypeInfo(object, valueTypeOf) {

@@ -22,7 +22,7 @@ namespace Ype {
         }
 
         computeName() {
-            const shapeDescription = getValueRepresentation(this.shape, {type: 'object'});
+            const shapeDescription = getValueRepresentation(this.shape, 'object');
             return `an object with shape ${shapeDescription}`
         }
 

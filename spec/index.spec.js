@@ -2,26 +2,30 @@ const y = require('../dist/index');
 
 describe('Type checking primitives', () => {
 
-    function a(theString, theNumber, theBoolean, theArray) {
+    function a(theString, theNumber, theBoolean, theArray, theSymbol, theBigInt) {
         y(
             [theString, String],
             [theNumber, Number],
             [theBoolean, Boolean],
             [theArray, Array],
+            [theSymbol, Symbol],
+            [theBigInt, BigInt],
         );
 
         return theNumber + 1;
     }
-    // coercion
 
     it('doesn\'t throw on fully matching types', () => {
-        a('yes', 1, true, [] );
+        a('yes', 1, true, [], Symbol('j'), 123n);
     });
 
     it('throws on wrong types', () => {
         expect(
             () => a(1, 1, true, [] )
         ).toThrow(new TypeError("1 is of the wrong type. Expected string, but got number."));
+        expect(
+            () => a('1', 1, true, [], 4)
+        ).toThrow(new TypeError("4 is of the wrong type. Expected symbol, but got number."));
     });
 
 });

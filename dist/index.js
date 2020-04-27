@@ -13,13 +13,13 @@ const buildTypeErrorMessage = (value, actualType, expectedTypeNames) => {
     else {
         type = `either ${getArrayAsFriendlyString(expectedTypeNames)}`;
     }
-    const valueRepresentation = getValueRepresentation(value, actualType);
+    const valueRepresentation = getValueRepresentation(value, actualType.type);
     return `${valueRepresentation} is of the wrong type. Expected ${type}, but got ${actualType.name}.`;
 };
 const assert = (value, desiredTypes, error) => {
     let realJsTypeOfValue = getRealTypeOf(value);
     let expectedTypeNames = [];
-    let mismatchingType = "";
+    let mismatchingType;
     for (let desiredType of desiredTypes) {
         const desiredTypeInfo = normalizeTypeAssertion(desiredType);
         mismatchingType = compareTypesAndGetMismatchingTypeInfo(realJsTypeOfValue, desiredTypeInfo, value);

@@ -16,7 +16,7 @@ namespace Ype {
 
         computeName() {
             let valuesList = this.values.reduce((a, v) => {
-                const valueType = getValueRepresentation(v, {type: getRealTypeOf(v)});
+                const valueType = getValueRepresentation(v, getRealTypeOf(v));
                 return a + ', ' + valueType;
             }, '');
             valuesList = valuesList.substring(2); // Remove initial ", "
@@ -30,7 +30,7 @@ namespace Ype {
                 }
             }
 
-            let valueRepresentation = getValueRepresentation(value, {type: valueType});
+            let valueRepresentation = getValueRepresentation(value, valueType);
             return {type: valueType, name: `value {${valueRepresentation}}`};
         }
     }
