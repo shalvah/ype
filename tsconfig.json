@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "Node",
     "target": "ES2018",
     "sourceMap": true,
     "allowJs": true,
@@ -16,7 +17,7 @@
     "demos"
   ],
   "include": [
-    "src/"
+    "src/index.ts"
   ],
   "types": [
     "node"

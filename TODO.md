@@ -2,7 +2,6 @@
 - Shapes - nested, custom types
 - undefined/null
 - Coercion/strict
-- type = ypetypes[]
 
 
 # Optimisations:

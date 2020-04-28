@@ -6,7 +6,7 @@
   "scripts": {
     "test-init": "jasmine init",
     "test": "jasmine",
-    "lint": "eslint src"
+    "lint": "eslint src/**.ts"
   },
   "repository": {
     "type": "git",
@@ -27,9 +27,12 @@
   "homepage": "https://github.com/shalvah/ype#readme",
   "devDependencies": {
     "@types/node": "^13.13.0",
-    "eslint": "^6.7.1",
+    "eslint": "^6.8.0",
     "jasmine": "^3.5.0",
     "typescript": "^3.8.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0"
+  }
 }

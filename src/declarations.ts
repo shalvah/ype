@@ -27,3 +27,6 @@ export type DesiredTypeInfo =
         name: string,
         type: RealJsType | Array<RealJsType>
     };
+
+export type TypeAssertion = Array<any>;
+    

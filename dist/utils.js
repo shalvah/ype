@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const { inspect } = require('util');
 const BaseType = require('./types/base');
 const formatObject = (object) => {
@@ -101,9 +100,9 @@ const compareTypesAndGetMismatchingTypeInfo = (realJsTypeOfValue, desiredTypeInf
             }
             let actualType;
             const possibleTypes = expectedType.slice(1);
-            for (let itemValue of value) {
+            for (const itemValue of value) {
                 let itemPassing = false;
-                for (let possibleType of possibleTypes) {
+                for (const possibleType of possibleTypes) {
                     actualType = compareTypesAndGetMismatchingTypeInfo(getRealTypeOf(itemValue), { type: possibleType }, itemValue);
                     if (actualType === null) {
                         // This item matches the spec, continue to next item.
@@ -120,7 +119,7 @@ const compareTypesAndGetMismatchingTypeInfo = (realJsTypeOfValue, desiredTypeInf
     }
     if (isCustomType(desiredTypeInfo)) {
         let mismatchedType;
-        for (let superset of desiredTypeInfo.inherits || []) {
+        for (const superset of desiredTypeInfo.inherits || []) {
             if ((mismatchedType = compareTypesAndGetMismatchingTypeInfo(realJsTypeOfValue, normalizeTypeAssertion(superset), value)) !== null) {
                 return mismatchedType;
             }

@@ -1,15 +1,15 @@
-import {DesiredType, DesiredTypeInfo, MismatchingTypeInfo, RealJsType, YpeType} from "./type-declarations";
+import {RealJsType, MismatchingTypeInfo, DesiredType, DesiredTypeInfo, YpeType} from "./declarations";
 
 const {inspect} = require('util');
 const BaseType = require('./types/base');
 
 
-const formatObject = (object) => {
-    const formatted = `${inspect(object, {breakLength: Infinity, compact: true, depth: 2})}`
+const formatObject = (object: object): string => {
+    const formatted = `${inspect(object, {breakLength: Infinity, compact: true, depth: 2})}`;
     return formatted.replace(/\[Function: (\w+)?]/g, "$1")
 };
 
-const getValueRepresentation = (value: any, valueType: RealJsType) => {
+const getValueRepresentation = (value: any, valueType: RealJsType): string => {
     let valueRepresentation = value;
     if (Array.isArray(value)) {
         valueRepresentation = `[${value}]`;
@@ -126,9 +126,9 @@ const compareTypesAndGetMismatchingTypeInfo = (
 
             let actualType;
             const possibleTypes = expectedType.slice(1);
-            for (let itemValue of value) {
+            for (const itemValue of value) {
                 let itemPassing = false;
-                for (let possibleType of possibleTypes) {
+                for (const possibleType of possibleTypes) {
                     actualType = compareTypesAndGetMismatchingTypeInfo(getRealTypeOf(itemValue), {type: possibleType}, itemValue);
                     if (actualType === null) {
                         // This item matches the spec, continue to next item.
@@ -145,10 +145,9 @@ const compareTypesAndGetMismatchingTypeInfo = (
         }
     }
 
-
     if (isCustomType(desiredTypeInfo)) {
         let mismatchedType;
-        for (let superset of desiredTypeInfo.inherits || []) {
+        for (const superset of desiredTypeInfo.inherits || []) {
             if ((mismatchedType = compareTypesAndGetMismatchingTypeInfo(realJsTypeOfValue, normalizeTypeAssertion(superset), value)) !== null) {
                 return mismatchedType;
             }
@@ -177,7 +176,7 @@ const getArrayAsFriendlyString = (array: string[]): string => {
 
 };
 
-module.exports = {
+export = {
     getValueRepresentation,
     getRealTypeOf,
     normalizeTypeAssertion,

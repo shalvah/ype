@@ -1,6 +1,5 @@
 'use strict';
 
-import {DesiredType, YpeType, MismatchingTypeInfo} from "./type-declarations";
 const {
     getValueRepresentation,
     getRealTypeOf,
@@ -8,12 +7,12 @@ const {
     compareTypesAndGetMismatchingTypeInfo,
     getArrayAsFriendlyString
 } = require('./utils');
-const ValueType = require('./types/value');
-const RangeType = require('./types/range');
-const ShapeType = require('./types/shape');
-const InstanceType = require('./types/instance');
+import ValueType = require('./types/value');
+import RangeType = require('./types/range');
+import ShapeType = require('./types/shape');
+import InstanceType = require('./types/instance');
 
-type TypeAssertion = Array<any>;
+import {MismatchingTypeInfo, DesiredType, TypeAssertion, YpeType, RealJsType} from './declarations';
 
 
 const buildTypeErrorMessage = (value: any, actualType: MismatchingTypeInfo, expectedTypeNames: string[]): string => {
@@ -30,12 +29,12 @@ const buildTypeErrorMessage = (value: any, actualType: MismatchingTypeInfo, expe
 };
 
 const assert = (value: any, desiredTypes: DesiredType[], error: TypeError) => {
-    let realJsTypeOfValue = getRealTypeOf(value);
+    const realJsTypeOfValue = getRealTypeOf(value);
 
     let expectedTypeNames = [];
     let mismatchingType: MismatchingTypeInfo;
 
-    for (let desiredType of desiredTypes) {
+    for (const desiredType of desiredTypes) {
         const desiredTypeInfo = normalizeTypeAssertion(desiredType);
         mismatchingType = compareTypesAndGetMismatchingTypeInfo(realJsTypeOfValue, desiredTypeInfo, value);
         if (mismatchingType === null) {
@@ -57,17 +56,22 @@ const ype = (...typeAssertions: TypeAssertion[]) => {
     }
 };
 
-ype.arrayOf = (...types) => types;
+ype.arrayOf = (...types: any[]) => types;
 
-ype.range = (lower, upper) => new RangeType(lower, upper);
+ype.range = (lower: Number, upper: Number) => new RangeType(lower, upper);
 
-ype.shape = (shape) => new ShapeType(shape);
+ype.shape = (shape: object) => new ShapeType(shape);
 
-ype.values = (...values) => new ValueType(values);
+ype.values = (...values: any[]) => new ValueType(values);
 
-ype.instanceOf = (classConstructor) => new InstanceType(classConstructor);
+ype.instanceOf = (classConstructor: Function) => new InstanceType(classConstructor);
 
-ype.makeCustomType = ({name, inherits, compareTypesAndGetMismatchingTypeInfo}): YpeType => {
+ype.makeCustomType = ({name, computeName, inherits, compareTypesAndGetMismatchingTypeInfo}: {
+    name?: string;
+    inherits: DesiredType[] | null,
+    computeName?: () => string,
+    compareTypesAndGetMismatchingTypeInfo: (value: any, realJsTypeOfValue: RealJsType) => null | MismatchingTypeInfo,
+}): YpeType => {
     const BaseType = require('./types/base');
     const type = new BaseType;
     name && (type.name = name);
@@ -76,4 +80,4 @@ ype.makeCustomType = ({name, inherits, compareTypesAndGetMismatchingTypeInfo}): 
     return type;
 };
 
-module.exports = ype;
+export = ype;
